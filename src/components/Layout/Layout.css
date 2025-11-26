@@ -1,0 +1,80 @@
+/* Mobile First: Default styles for mobile */
+.app-layout {
+    display: flex;
+    flex-direction: column;
+    /* Mobile: column layout */
+    height: 100vh;
+    background-color: var(--color-bg);
+    overflow: hidden;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px;
+    /* Space for mobile bottom nav */
+    -webkit-overflow-scrolling: touch;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Mobile: Hide Sidebar, Show Bottom Nav */
+.sidebar {
+    display: none !important;
+}
+
+.navigation {
+    display: block;
+}
+
+/* Mobile: Hide desktop-only elements */
+.desktop-only {
+    display: none !important;
+}
+
+/* Desktop/Tablet: Show Sidebar, Hide Bottom Nav */
+@media (min-width: 768px) {
+    .app-layout {
+        flex-direction: row;
+        /* Desktop: row layout for sidebar */
+    }
+
+    .sidebar {
+        display: flex !important;
+        /* Show sidebar */
+    }
+
+    .navigation {
+        display: none !important;
+        /* Hide bottom nav */
+    }
+
+    .main-content {
+        padding-bottom: 0;
+        /* No bottom nav on desktop */
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .mobile-only {
+        display: none !important;
+    }
+}
+
+/* Standard Page Container */
+.page-container {
+    width: 100%;
+    padding: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (min-width: 768px) {
+    .page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 24px;
+    }
+}
