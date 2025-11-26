@@ -185,6 +185,40 @@ const ModelLoadingScreen: React.FC = () => {
                                 ? `${whisperState.progress}% complete`
                                 : 'Initializing...'}
                         </p>
+
+                        {/* Skip Button */}
+                        <button
+                            onClick={skipInitialization}
+                            style={{
+                                marginTop: '20px',
+                                padding: '10px 20px',
+                                backgroundColor: 'transparent',
+                                color: 'var(--color-text-secondary)',
+                                border: '1px solid var(--color-border)',
+                                borderRadius: '8px',
+                                fontSize: '14px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = 'var(--color-surface)';
+                                e.currentTarget.style.borderColor = 'var(--color-primary)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.borderColor = 'var(--color-border)';
+                            }}
+                        >
+                            Skip & Use App Now
+                        </button>
+                        <p style={{
+                            fontSize: '11px',
+                            color: 'var(--color-text-secondary)',
+                            marginTop: '8px',
+                            fontStyle: 'italic'
+                        }}>
+                            Voice features will be limited without the model
+                        </p>
                     </motion.div>
                 )}
             </div>
