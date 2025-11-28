@@ -144,7 +144,8 @@ export class ConversationService {
             .delete();
 
         // Delete the session
-        await db.chat_sessions.delete(sessionId);
+        // chat_sessions primary key is a number, so we must convert the string ID back to number
+        await db.chat_sessions.delete(Number(sessionId));
 
         // If this was the current session, clear it
         if (this.currentSessionId === sessionId) {

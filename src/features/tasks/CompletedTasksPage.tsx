@@ -55,7 +55,7 @@ const CompletedTasksPage: React.FC = () => {
         const tasks = dbDeleted
             .map(t => ({
                 ...t,
-                id: t.id!.toString(),
+                id: t.id, // Keep as number
                 date: t.date ? new Date(t.date) : undefined,
                 deletedAt: new Date(t.deletedAt)
             }))
@@ -117,9 +117,9 @@ const CompletedTasksPage: React.FC = () => {
         await loadDeletedTasks();
     };
 
-    const handleDeleteForever = async (id: string) => {
+    const handleDeleteForever = async (id: number) => {
         if (confirm('ต้องการลบถาวรหรือไม่?')) {
-            await db.deleted_tasks.delete(Number(id));
+            await db.deleted_tasks.delete(id);
             await loadDeletedTasks();
         }
     };

@@ -1,17 +1,20 @@
 import Dexie, { type Table } from 'dexie';
 
 export interface Note {
-    id?: string;
+    id?: number;
+    uuid?: string;
     title: string;
     content: string;
     category: string;
     date: Date;
     audioBlob?: Blob;
     transcriptionStatus?: 'pending' | 'completed' | 'failed';
+    updatedAt?: Date;
 }
 
 export interface Task {
-    id?: string;
+    id?: number;
+    uuid?: string;
     title: string;
     description?: string;
     completed: boolean;
@@ -20,10 +23,12 @@ export interface Task {
     priority: 'low' | 'medium' | 'high';
     category: string;
     completedAt?: Date; // Track when task was completed
+    updatedAt?: Date;
 }
 
 export interface DeletedTask {
-    id?: string;
+    id?: number;
+    uuid?: string;
     originalId: string; // Original task ID
     title: string;
     description?: string;
@@ -34,10 +39,12 @@ export interface DeletedTask {
     category: string;
     deletedAt: Date; // When it was deleted
     completedAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface Category {
-    id?: string;
+    id?: number;
+    uuid?: string;
     name: string;
     type: 'note' | 'task' | 'both';
     createdBy: 'user' | 'ai';
@@ -46,21 +53,25 @@ export interface Category {
     icon?: string;
     count: number;
     createdAt: Date;
+    updatedAt?: Date;
 }
 
 export interface ChatSession {
-    id?: string;
+    id?: number;
+    uuid?: string;
     createdAt: Date;
     updatedAt: Date;
     title?: string; // Auto-generated from first message
 }
 
 export interface ChatMessage {
-    id?: string;
+    id?: number;
+    uuid?: string;
     sessionId: string;
     role: 'user' | 'assistant';
     content: string;
     timestamp: Date;
+    updatedAt?: Date;
 }
 
 export interface Setting {
@@ -129,6 +140,26 @@ export class VoiceNoteDB extends Dexie {
                         completedAt: task.date || new Date()
                     });
                 }
+            }
+        });
+
+        // Version 5: Add UUID and updatedAt for sync
+        this.version(5).stores({
+            notes: '++id, uuid, title, category, date, transcriptionStatus, updatedAt',
+            tasks: '++id, uuid, title, completed, date, priority, completedAt, updatedAt',
+            deleted_tasks: '++id, uuid, originalId, deletedAt, updatedAt',
+            categories: '++id, uuid, name, type, createdBy, updatedAt',
+            chat_sessions: '++id, uuid, createdAt, updatedAt',
+            chat_messages: '++id, uuid, sessionId, role, timestamp, updatedAt',
+            settings: 'key',
+            syncQueue: '++id, action, timestamp'
+        }).upgrade(async (trans) => {
+            const tables = ['notes', 'tasks', 'deleted_tasks', 'categories', 'chat_sessions', 'chat_messages'];
+            for (const tableName of tables) {
+                await trans.table(tableName).toCollection().modify(item => {
+                    if (!item.uuid) item.uuid = crypto.randomUUID();
+                    if (!item.updatedAt) item.updatedAt = new Date();
+                });
             }
         });
     }

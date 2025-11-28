@@ -7,26 +7,32 @@ import NotesPage from './features/notes/NotesPage';
 import ProfilePage from './features/profile/ProfilePage';
 import VoicePage from './features/voice/VoicePage';
 import { ModelProvider } from './contexts/ModelContext';
-import ModelLoadingScreen from './components/ModelLoadingScreen';
+
+
+import { AuthProvider } from './contexts/AuthContext';
+import LoginPage from './features/auth/LoginPage';
 
 function App() {
   return (
-    <ModelProvider>
-      <ModelLoadingScreen />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/voice" replace />} />
-            <Route path="history" element={<HistoryPage />} />
-            <Route path="tasks" element={<TasksPage />} />
-            <Route path="completed-tasks" element={<CompletedTasksPage />} />
-            <Route path="voice" element={<VoicePage />} />
-            <Route path="notes" element={<NotesPage />} />
-            <Route path="profile" element={<ProfilePage />} />
-          </Route>
-        </Routes>
-      </Router>
-    </ModelProvider>
+    <AuthProvider>
+      <ModelProvider>
+
+        <Router>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/voice" replace />} />
+              <Route path="history" element={<HistoryPage />} />
+              <Route path="tasks" element={<TasksPage />} />
+              <Route path="completed-tasks" element={<CompletedTasksPage />} />
+              <Route path="voice" element={<VoicePage />} />
+              <Route path="notes" element={<NotesPage />} />
+              <Route path="profile" element={<ProfilePage />} />
+            </Route>
+          </Routes>
+        </Router>
+      </ModelProvider>
+    </AuthProvider>
   );
 }
 

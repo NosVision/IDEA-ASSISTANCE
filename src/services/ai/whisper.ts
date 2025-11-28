@@ -2,7 +2,7 @@ import { pipeline, env } from '@xenova/transformers';
 
 // Skip local model checks to avoid "Unexpected token <" errors (Vite returning index.html)
 env.allowLocalModels = false;
-env.useBrowserCache = true;
+env.useBrowserCache = false;
 
 export class OfflineWhisperService {
     private static transcriber: any = null;

@@ -74,7 +74,7 @@ const Sidebar: React.FC = () => {
                         className="history-item"
                         onClick={async () => {
                             if (session.id) {
-                                await ConversationService.switchSession(session.id);
+                                await ConversationService.switchSession(String(session.id));
                                 navigate('/voice');
                             }
                         }}

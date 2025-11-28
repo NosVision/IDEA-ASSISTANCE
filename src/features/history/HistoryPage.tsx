@@ -28,8 +28,8 @@ const HistoryPage: React.FC = () => {
             // Load message counts and previews
             const sessionsWithDetails = await Promise.all(
                 allSessions.map(async (session) => {
-                    const messageCount = await ConversationService.getMessageCount(session.id!);
-                    const preview = await ConversationService.getFirstMessage(session.id!);
+                    const messageCount = await ConversationService.getMessageCount(String(session.id!));
+                    const preview = await ConversationService.getFirstMessage(String(session.id!));
                     return {
                         ...session,
                         messageCount,
@@ -46,22 +46,22 @@ const HistoryPage: React.FC = () => {
         }
     };
 
-    const handleSessionClick = async (sessionId: string) => {
+    const handleSessionClick = async (sessionId: number) => {
         try {
-            await ConversationService.switchSession(sessionId);
+            await ConversationService.switchSession(String(sessionId));
             navigate('/voice');
         } catch (error) {
             console.error('Failed to switch session:', error);
         }
     };
 
-    const handleDeleteSession = async (sessionId: string, e: React.MouseEvent) => {
+    const handleDeleteSession = async (sessionId: number, e: React.MouseEvent) => {
         e.stopPropagation();
 
         if (!confirm('ต้องการลบบทสนทนานี้หรือไม่?')) return;
 
         try {
-            await ConversationService.deleteSession(sessionId);
+            await ConversationService.deleteSession(String(sessionId));
             await loadSessions();
         } catch (error) {
             console.error('Failed to delete session:', error);

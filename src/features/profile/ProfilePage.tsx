@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, MessageSquare, Sparkles, Search, Network } from 'lucide-react';
+import { X, MessageSquare, Sparkles, Search, Network, LogIn, LogOut, User } from 'lucide-react';
 import { db } from '../../db';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../contexts/AuthContext';
+import { SyncStatus } from '../../components/SyncStatus';
+
 
 interface APIKeys {
     openai: string;
@@ -20,6 +23,7 @@ interface Provider {
 }
 
 const ProfilePage: React.FC = () => {
+    const { user, signInWithGoogle, signOut } = useAuth();
     const [apiKeys, setApiKeys] = useState<APIKeys>({
         openai: '',
         anthropic: '',
@@ -54,6 +58,22 @@ const ProfilePage: React.FC = () => {
     const openProviderModal = (provider: Provider) => {
         setSelectedProvider(provider);
         setTempKey(apiKeys[provider.key] || '');
+    };
+
+    const handleLogin = async () => {
+        try {
+            await signInWithGoogle();
+        } catch (error) {
+            console.error('Login failed:', error);
+        }
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut();
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
     };
 
     const providers: Provider[] = [
@@ -100,6 +120,94 @@ const ProfilePage: React.FC = () => {
         <div className="page-container" style={{ maxWidth: '600px' }}>
             {/* Header */}
             <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '32px' }}>Settings</h1>
+
+            {/* Account Section */}
+            <div style={{ marginBottom: '32px' }}>
+                <h2 style={{
+                    fontSize: '13px',
+                    fontWeight: '600',
+                    textTransform: 'uppercase',
+                    color: 'var(--color-text-secondary)',
+                    marginBottom: '16px',
+                    letterSpacing: '0.5px'
+                }}>
+                    ACCOUNT
+                </h2>
+                <div style={{
+                    padding: '16px',
+                    backgroundColor: 'var(--color-surface)',
+                    borderRadius: '16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '16px'
+                }}>
+                    {user ? (
+                        <>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                {user.photoURL ? (
+                                    <img src={user.photoURL} alt={user.displayName || 'User'} style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
+                                ) : (
+                                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: 'var(--color-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+                                        <User size={24} />
+                                    </div>
+                                )}
+                                <div>
+                                    <div style={{ fontWeight: '600', fontSize: '16px' }}>{user.displayName || 'User'}</div>
+                                    <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>{user.email}</div>
+                                </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <SyncStatus />
+                                <button
+                                    onClick={handleLogout}
+                                    style={{
+                                        padding: '8px',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--color-border)',
+                                        backgroundColor: 'transparent',
+                                        cursor: 'pointer',
+                                        color: 'var(--color-danger)'
+                                    }}
+                                    title="Logout"
+                                >
+                                    <LogOut size={20} />
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>
+                                    <User size={24} />
+                                </div>
+                                <div>
+                                    <div style={{ fontWeight: '600', fontSize: '16px' }}>Not Signed In</div>
+                                    <div style={{ fontSize: '14px', color: 'var(--color-text-secondary)' }}>Sign in to sync your data</div>
+                                </div>
+                            </div>
+                            <button
+                                onClick={handleLogin}
+                                style={{
+                                    padding: '10px 20px',
+                                    borderRadius: '12px',
+                                    backgroundColor: 'var(--color-primary)',
+                                    color: 'white',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    fontWeight: '600',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}
+                            >
+                                <LogIn size={18} />
+                                Sign In
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
 
             {/* AI Providers Section */}
             <div style={{ marginBottom: '24px' }}>
