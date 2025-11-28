@@ -27,19 +27,8 @@ const Sidebar: React.FC = () => {
     };
 
     const handleNewChat = async () => {
-        // Navigate to voice page and trigger new chat
-        // We can use a custom event or just navigate. 
-        // For now, let's navigate to /voice and let the user start there, 
-        // or we can force a new session if we are already there.
-
-        if (window.location.pathname === '/voice') {
-            // If already on voice page, we might want to trigger a reset.
-            // This is a bit tricky without a global context for chat state.
-            // A simple page reload or navigation with state could work.
-            window.location.reload(); // Simple but effective for now to reset state
-        } else {
-            navigate('/voice');
-        }
+        // Navigate to voice page and trigger new chat using state
+        navigate('/voice', { state: { newChat: true } });
     };
 
     return (

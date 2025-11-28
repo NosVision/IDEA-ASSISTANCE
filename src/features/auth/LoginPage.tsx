@@ -3,22 +3,42 @@ import { useNavigate } from 'react-router-dom';
 import { GoogleAuthService } from '../../services/auth/GoogleAuth';
 import { motion } from 'framer-motion';
 import { Sparkles, ArrowRight } from 'lucide-react';
+import '../../config/firebase'; // Force load Firebase config
+import { useAuth } from '../../contexts/AuthContext'; // Ensure AuthContext is loaded
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useAuth(); // This ensures AuthContext and Firebase are initialized
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const handleGoogleLogin = async () => {
+        console.log('🔵 Sign in button clicked');
         setLoading(true);
         setError(null);
         try {
+            console.log('🔵 Calling GoogleAuthService.signInWithGoogle()...');
             await GoogleAuthService.signInWithGoogle();
-            // signInWithRedirect will redirect to Google, no need to navigate here
-            // User will be redirected back and AuthContext will handle the rest
+            console.log('✅ Sign in successful!');
+            // With popup, we can navigate immediately after success
+            navigate('/voice');
         } catch (err: any) {
-            console.error('Login failed:', err);
-            setError('Failed to sign in. Please check your connection and try again.');
+            console.error('❌ Login failed:', err);
+            console.error('❌ Error code:', err.code);
+            console.error('❌ Error message:', err.message);
+
+            let errorMessage = 'Failed to sign in. ';
+            if (err.code === 'auth/configuration-not-found') {
+                errorMessage += 'Firebase configuration error. Please check your setup.';
+            } else if (err.code === 'auth/popup-blocked') {
+                errorMessage += 'Popup was blocked. Please allow popups for this site.';
+            } else if (err.code === 'auth/popup-closed-by-user') {
+                errorMessage += 'Sign in was cancelled.';
+            } else {
+                errorMessage += err.message || 'Please check your connection and try again.';
+            }
+
+            setError(errorMessage);
             setLoading(false);
         }
     };

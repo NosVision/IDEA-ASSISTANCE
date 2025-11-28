@@ -57,7 +57,28 @@ const VoicePage: React.FC = () => {
         // Load messages from database
         const loadMessages = async () => {
             try {
-                const sessionId = await ConversationService.getCurrentSession();
+                // Cleanup empty sessions first to keep history clean
+                await ConversationService.cleanupEmptySessions();
+
+                let sessionId: string | null = null;
+
+                // Check if we should start a new chat (passed from navigation state)
+                const shouldStartNew = location.state?.newChat;
+
+                if (shouldStartNew) {
+                    sessionId = await ConversationService.startNewSession();
+                    // Clear the state so we don't create new session on reload
+                    window.history.replaceState({}, document.title);
+                } else {
+                    // Try to resume most recent session
+                    sessionId = await ConversationService.getMostRecentSession();
+
+                    // If no recent session exists, create a new one
+                    if (!sessionId) {
+                        sessionId = await ConversationService.startNewSession();
+                    }
+                }
+
                 setCurrentSessionId(sessionId);
                 const dbMessages = await ConversationService.getSessionMessages(sessionId);
 
@@ -70,6 +91,7 @@ const VoicePage: React.FC = () => {
                         timestamp: msg.timestamp
                     }));
                     setMessages(loadedMessages);
+                    setHasGeneratedTitle(true);
                 } else {
                     // Show welcome message only if no messages exist
                     setMessages([
@@ -96,7 +118,7 @@ const VoicePage: React.FC = () => {
         };
 
         loadMessages();
-    }, []);
+    }, [location.state]); // Depend on location.state to trigger new chat
 
     // Reload messages when navigating back to VoicePage (e.g., from History)
     useEffect(() => {

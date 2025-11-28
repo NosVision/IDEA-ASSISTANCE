@@ -185,4 +185,39 @@ export class ConversationService {
         const firstUserMessage = messages.find(m => m.role === 'user');
         return firstUserMessage ? firstUserMessage.content : messages[0].content;
     }
+    /**
+     * Get the most recent session
+     */
+    static async getMostRecentSession(): Promise<string | null> {
+        const session = await db.chat_sessions.orderBy('updatedAt').reverse().first();
+        if (session && session.id) {
+            this.currentSessionId = String(session.id);
+            return this.currentSessionId;
+        }
+        return null;
+    }
+
+    /**
+     * Cleanup empty sessions (sessions with 0 messages)
+     */
+    static async cleanupEmptySessions(): Promise<number> {
+        const sessions = await db.chat_sessions.toArray();
+        let deletedCount = 0;
+
+        for (const session of sessions) {
+            if (!session.id) continue;
+
+            const messageCount = await this.getMessageCount(String(session.id));
+            if (messageCount === 0) {
+                await db.chat_sessions.delete(session.id);
+                deletedCount++;
+            }
+        }
+
+        if (deletedCount > 0) {
+            console.log(`Cleaned up ${deletedCount} empty sessions`);
+        }
+
+        return deletedCount;
+    }
 }

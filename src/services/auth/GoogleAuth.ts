@@ -1,7 +1,7 @@
 
 import {
     GoogleAuthProvider,
-    signInWithRedirect,
+    signInWithPopup,
     signOut as firebaseSignOut
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
@@ -24,7 +24,8 @@ export class GoogleAuthService {
         provider.addScope('https://www.googleapis.com/auth/drive.appdata');
 
         try {
-            await signInWithRedirect(auth, provider);
+            // Use signInWithPopup for better localhost support and easier debugging
+            await signInWithPopup(auth, provider);
         } catch (error) {
             console.error('Google Sign-In Error:', error);
             throw error;

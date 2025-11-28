@@ -1,4 +1,4 @@
-
+import './config/firebase' // Force Firebase initialization immediately
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/global.css'

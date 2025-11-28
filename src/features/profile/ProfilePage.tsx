@@ -60,12 +60,10 @@ const ProfilePage: React.FC = () => {
         setTempKey(apiKeys[provider.key] || '');
     };
 
-    const handleLogin = async () => {
-        try {
-            await signInWithGoogle();
-        } catch (error) {
-            console.error('Login failed:', error);
-        }
+    const handleLogin = () => {
+        // Navigate to login page instead of triggering auth directly
+        // This ensures a consistent flow: Profile -> Login Page -> Google Sign In
+        window.location.href = '/login';
     };
 
     const handleLogout = async () => {

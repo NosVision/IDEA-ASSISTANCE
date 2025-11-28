@@ -41,17 +41,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
 
         // Handle redirect result
+        console.log('🔵 Checking getRedirectResult...');
         getRedirectResult(auth).then(async (result) => {
+            console.log('🔵 getRedirectResult result:', result);
             if (result) {
+                console.log('✅ Redirect login successful, user:', result.user.email);
                 const credential = GoogleAuthProvider.credentialFromResult(result);
                 if (credential?.accessToken) {
                     localStorage.setItem('google_access_token', credential.accessToken);
                 }
                 // Redirect to voice page after successful login
+                console.log('🔄 Redirecting to /voice...');
                 window.location.href = '/voice';
+            } else {
+                console.log('⚪ No redirect result found (normal if not returning from redirect)');
             }
         }).catch((error) => {
-            console.error('Redirect Login Error:', error);
+            console.error('❌ Redirect Login Error:', error);
+            console.error('❌ Error Code:', error.code);
+            console.error('❌ Error Message:', error.message);
         });
 
         return () => unsubscribe();
