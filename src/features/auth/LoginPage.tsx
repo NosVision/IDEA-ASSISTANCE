@@ -14,11 +14,11 @@ const LoginPage: React.FC = () => {
         setError(null);
         try {
             await GoogleAuthService.signInWithGoogle();
-            navigate('/voice');
+            // signInWithRedirect will redirect to Google, no need to navigate here
+            // User will be redirected back and AuthContext will handle the rest
         } catch (err: any) {
             console.error('Login failed:', err);
             setError('Failed to sign in. Please check your connection and try again.');
-        } finally {
             setLoading(false);
         }
     };

@@ -47,7 +47,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 if (credential?.accessToken) {
                     localStorage.setItem('google_access_token', credential.accessToken);
                 }
-                // User is already handled by onAuthStateChanged, but we can do extra stuff here if needed
+                // Redirect to voice page after successful login
+                window.location.href = '/voice';
             }
         }).catch((error) => {
             console.error('Redirect Login Error:', error);
