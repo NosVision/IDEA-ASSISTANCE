@@ -25,7 +25,19 @@ export class GoogleAuthService {
 
         try {
             // Use signInWithPopup for better localhost support and easier debugging
-            await signInWithPopup(auth, provider);
+            const result = await signInWithPopup(auth, provider);
+
+            // Get the Google Access Token
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential?.accessToken;
+
+            if (token) {
+                // Save token for SyncManager to use
+                localStorage.setItem('google_access_token', token);
+                console.log('✅ Google Access Token saved');
+            } else {
+                console.warn('⚠️ No access token returned from Google Sign-In');
+            }
         } catch (error) {
             console.error('Google Sign-In Error:', error);
             throw error;
