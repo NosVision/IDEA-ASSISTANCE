@@ -23,7 +23,7 @@ interface Provider {
 }
 
 const ProfilePage: React.FC = () => {
-    const { user, signInWithGoogle, signOut } = useAuth();
+    const { user, signOut } = useAuth();
     const [apiKeys, setApiKeys] = useState<APIKeys>({
         openai: '',
         anthropic: '',

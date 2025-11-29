@@ -8,7 +8,7 @@ import { useAuth } from '../../contexts/AuthContext'; // Ensure AuthContext is l
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useAuth(); // This ensures AuthContext and Firebase are initialized
+    useAuth(); // This ensures AuthContext and Firebase are initialized
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
